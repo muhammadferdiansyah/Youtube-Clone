@@ -8,30 +8,32 @@
 import Foundation
 
 class Model {
-    
-    // buat fungsi untuk ngambil data dari youtube API
-    func getVideos() {
-        // simpan url ke dalam variabel
+    func getVideos(){
         let url = URL (string: Constants.API_URL)
         
-       // kita cek dulu urlnya kosong gak?
         guard url != nil else{
             return
         }
         
-        // mendapatkan URLSession dari object
         let session = URLSession.shared
-        
-        // mendapatkan data dari URLSession
-        let dataTask = session.dataTask(with: url!){ (data, respone, error) in
+        let dataTask = session.dataTask(with: url!){ (data, response, error) in
             
-            // cek kalo ada error
             if error != nil || data == nil{
                 return
             }
+            
+            do {
+                let decoder = JSONDecoder()
+                decoder.dateDecodingStrategy = .iso8601
+                
+                let response = try decoder.decode(Response.self, from: data!)
+                
+                dump(response)
+            }
+            catch{
+            }
         }
         
-        // mulai bekerja
         dataTask.resume()
     }
 }
